@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --no-input && gunicorn linkhub_core.wsgi
+web: python manage.py runserver 0.0.0.0:$PORT
