@@ -16,7 +16,8 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(','
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') # <-- MOVED HERE
 
 CORS_ALLOWED_ORIGINS = [
-    "null", # <-- Add this for local file testing
+    "null",
+    "https://melodious-starburst-a7e5fd.netlify.app",
 ]
 
 # --- APPLICATION DEFINITION ---
