@@ -1,7 +1,7 @@
 # profiles/views.py
 
 import os
-from openai import OpenAI
+import random # Import the random library for the mock generator
 from rest_framework import viewsets, generics, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
@@ -17,10 +17,9 @@ class ProfileMeView(generics.RetrieveUpdateAPIView):
     """
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated] # Only authenticated users can access this
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        # This method returns the profile object associated with the request.user
         return self.request.user.profile
 
 
@@ -46,7 +45,6 @@ class LinkViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        # Find the user's profile and associate the new link with it
         profile = Profile.objects.get(owner=self.request.user)
         serializer.save(profile=profile)
 
@@ -59,9 +57,21 @@ class UserCreateView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
 
 
+# --- MOCK AI FUNCTION (Free) ---
+def generate_mock_bio(keywords):
+    templates = [
+        "Seasoned {keywords} specialist, crafting robust digital solutions. Passionate about building the future of the web.",
+        "Expert in {keywords}. Dedicated to creating clean, efficient code and solving complex problems.",
+        "A {keywords} enthusiast with a knack for backend development. Always learning and exploring new technologies.",
+        "Driven by a passion for {keywords}. Let's connect and build something amazing together.",
+    ]
+    template = random.choice(templates)
+    return template.format(keywords=keywords)
+
+
 class GenerateBioView(APIView):
     """
-    A view to handle AI Bio Generation requests.
+    A view to handle AI Bio Generation requests (using a free, mock generator).
     """
     permission_classes = [IsAuthenticated]
 
@@ -74,23 +84,14 @@ class GenerateBioView(APIView):
             )
 
         try:
-            client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-            prompt = f"You are a professional branding expert. Write a short, engaging bio (under 160 characters) for a person with these keywords: {keywords}"
-
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=100,
-                n=1,
-                stop=None,
-                temperature=0.7,
-            )
-            generated_bio = response.choices[0].message.content.strip()
+            # Call our local, free mock function instead of OpenAI
+            generated_bio = generate_mock_bio(keywords)
+            
             return Response({"bio": generated_bio}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print(f"Error calling OpenAI: {e}") 
+            print(f"Error in mock generator: {e}") 
             return Response(
-                {"error": "Failed to generate bio from AI service."},
+                {"error": "Failed to generate bio."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
