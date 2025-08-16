@@ -15,6 +15,13 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 
+CORS_ALLOWED_ORIGINS = [
+    "https://melodious-starburst-a7e5fd.netlify.app",
+    "null", 
+    "http://localhost:8080",
+    "http://127.0.0.1:5500",
+]
+
 # --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
     'django.contrib.admin',
