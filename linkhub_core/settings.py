@@ -30,10 +30,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'storages',
+    'django_filters', # <-- This was missing
+
+    # Local apps
     'profiles',
 ]
 
@@ -101,17 +106,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- DRF & JWT SETTINGS ---
-# linkhub_core/settings.py
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    # --- ADD THIS BLOCK ---
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     )
-    # --------------------
 }
 
 # --- PRODUCTION SETTINGS ---
@@ -126,16 +127,14 @@ if not DEBUG:
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_REGION_NAME = 'ap-south-1' 
+    AWS_S3_REGION_NAME = 'ap-south-1'
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     AWS_S3_FILE_OVERWRITE = False
     
-    # --- THIS IS THE NEWLY ADDED PART ---
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
-        'ContentDisposition': 'inline', # Tells the browser to display the file
+        'ContentDisposition': 'inline',
     }
-    # -----------------------------------
     
     STORAGES = {
         "default": {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"},
