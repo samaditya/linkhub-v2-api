@@ -19,7 +19,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     # --- THIS IS THE CHANGE ---
     # Instead of nesting the full LinkSerializer, we use a simpler representation.
-    links = serializers.StringRelatedField(many=True, read_only=True)
+    links = LinkSerializer(many=True, read_only=True)
 
     class Meta:
         model = Profile
